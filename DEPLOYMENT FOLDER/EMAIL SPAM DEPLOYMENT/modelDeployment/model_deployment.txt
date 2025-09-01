@@ -1,0 +1,38 @@
+python manage.py startapp myapp
+
+In myapp/forms.py, define your form:
+from django import forms
+
+class ContactForm(forms.Form):
+    name = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    message = forms.CharField(widget=forms.Textarea)
+
+In myapp/views.py, create a view that renders the form:
+from django.shortcuts import render
+from .forms import ContactForm
+
+def contact(request):
+    form = ContactForm()
+    return render(request, 'contact.html', {'form': form})
+
+In myapp/templates/contact.html, create a template that displays the form:
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Contact Us</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Send</button>
+  </form>
+{% endblock %}
+
+
+Finally, add the URL to myapp/urls.py:
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('contact/', views.contact, name='contact'),
+]
